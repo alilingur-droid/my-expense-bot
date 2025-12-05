@@ -31,7 +31,8 @@ async def cmd_addexp(message: Message, state: FSMContext):
 @fsm_router.message(AddExp.nachalnaya_trati)
 async def handle_amount(message: Message, state: FSMContext):
         try:
-            amount = float(message.text)
+            text = message.text.replace(',','.')
+            amount = float(text)
             await state.update_data(amount=amount)
             await message.answer('Выберете категорию', reply_markup=make_keyboard(categoriii))
             await message.answer('Хотите отменить действие?', reply_markup=callback_keyboard)
@@ -40,7 +41,7 @@ async def handle_amount(message: Message, state: FSMContext):
         except ValueError:
             await message.answer('Введите число')
 
-@fsm_router.callback_query(F.data == 'yes_action')
+@fsm_router.callback_query(AddExp.categoria, F.data == 'yes_action')
 async def handle_yes(callback: CallbackQuery, state: FSMContext):
     await callback.answer("Удалено")
     await state.clear()
@@ -58,7 +59,7 @@ async def cmd_opisanie(message: Message):
     await message.answer('Я не знаю такой категории',reply_markup=callback_keyboard1233)
 
 
-@fsm_router.message(AddExp.promezzutok_opisanie, F.data == 'yes')
+@fsm_router.callback_query(AddExp.promezzutok_opisanie, F.data == 'yes')
 async def cmd_add_opisanie(callback: CallbackQuery, state: FSMContext):
      await callback.answer()
      await callback.message.edit_text("Введите описание:")
